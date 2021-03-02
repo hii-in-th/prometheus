@@ -11,7 +11,7 @@ services:
   prometheus:
     image: prom/prometheus
     volumes:
-      - ./prometheus-metrix/:/etc/prometheus/
+      - ./prometheus/:/etc/prometheus/
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
