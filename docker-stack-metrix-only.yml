@@ -11,7 +11,7 @@ services:
   prometheus:
     image: prom/prometheus
     volumes:
-      - ./prometheus/:/etc/prometheus/
+      - ./prometheus-metrix/:/etc/prometheus/
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -34,6 +34,40 @@ services:
       restart_policy:
         condition: on-failure
 
+  alertmanager:
+    image: prom/alertmanager
+    ports:
+      - 9232:9093
+    volumes:
+      - "./alertmanager/:/etc/alertmanager/"
+    networks:
+      - monitor-net
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    deploy:
+      placement:
+        constraints:
+           - node.role==manager
+      restart_policy:
+        condition: on-failure    
+
+  cadvisor:
+    image: google/cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - 9233:8080
+    networks:
+      - monitor-net
+    deploy:
+      mode: global
+      restart_policy:
+          condition: on-failure
+
   node-exporter:
     image: prom/node-exporter
     volumes:
@@ -46,7 +80,7 @@ services:
       - --collector.filesystem.ignored-mount-points
       - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
     ports:
-      - 9231:9100
+      - 9234:9100
     networks:
       - monitor-net
     deploy:
@@ -54,22 +88,5 @@ services:
       restart_policy:
           condition: on-failure
  
-
-  cadvisor:
-    image: google/cadvisor
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-    ports:
-      - 9232:8080
-    networks:
-      - monitor-net
-    deploy:
-      mode: global
-      restart_policy:
-          condition: on-failure
-
 
 
