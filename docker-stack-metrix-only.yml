@@ -17,7 +17,7 @@ services:
       - --collector.filesystem.ignored-mount-points
       - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
     ports:
-      - 9100:9100
+      - 9231:9100
     networks:
       - monitor-net
     deploy:
@@ -34,7 +34,7 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
     ports:
-      - 8080:8080
+      - 9232:8080
     networks:
       - monitor-net
     deploy:
